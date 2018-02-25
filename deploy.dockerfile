@@ -26,4 +26,6 @@ RUN git clone https://github.com/M4R14/py-ssh.git && \
   pip install -r ./py-ssh/requirements.txt && \
   cp ./py-ssh/py-ssh /usr/bin/
 
+COPY ./py-ssh.json /home/py-ssh.json
+
 WORKDIR /home/
