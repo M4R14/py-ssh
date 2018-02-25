@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+import fire
+import paramiko
+import json
+
+def deploy(command):
+  severHost = json.load(open('py-ssh.json'));
+  _command = command;
+  _host = severHost['host'];
+  _username = severHost['user'];
+  _password = severHost['password'];
+  _dir = severHost['dir'];
+
+  ssh = paramiko.SSHClient();
+  ssh.load_system_host_keys();
+  ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy());
+  ssh.connect(
+    _host,
+    username=_username,
+    password=_password
+  );
+
+  cd_dir = "cd " + _dir + ' && pwd';
+  command = cd_dir +" && "+ _command;
+  stdin, stdout, stderr = ssh.exec_command(command);
+
+  stderrText = stderr.read().decode("utf-8");
+  stdoutText = stdout.read().decode("utf-8");
+  if stdoutText != '' :
+    print('[success]: '+ stdoutText);
+
+  if stderrText != '' :
+    print('[error]: '+ stderrText);
+  
+if __name__ == '__main__':
+  fire.Fire(deploy);
