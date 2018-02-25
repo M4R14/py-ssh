@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import fire
 import paramiko
 import json
@@ -11,26 +12,27 @@ def deploy(command):
   _password = severHost['password'];
   _dir = severHost['dir'];
 
-  ssh = paramiko.SSHClient();
-  ssh.load_system_host_keys();
-  ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy());
-  ssh.connect(
+  client = paramiko.SSHClient();
+  client.load_system_host_keys();
+  client.set_missing_host_key_policy(paramiko.AutoAddPolicy());
+  client.connect(
     _host,
     username=_username,
     password=_password
   );
+  cd_dir = "cd %s; " % _dir;
+  command_list = command.split('\n');
+  for cmd in command_list:
+    if cmd == '':
+      continue;
+    print("[command]: %s" % cmd);
+    stdin, stdout, stderr = client.exec_command(cd_dir + cmd);
+    exit_status = stdout.channel.recv_exit_status();
+    if exit_status == 0:
+      print('[success]: %s' % stdout.read().decode("utf-8"));
+    else:
+      print("[status] %s" % exit_status);
+      sys.exit('[error]: %s' % stderr.read().decode("utf-8"));
 
-  cd_dir = "cd " + _dir + ' && pwd';
-  command = cd_dir +" && "+ _command;
-  stdin, stdout, stderr = ssh.exec_command(command);
-
-  stderrText = stderr.read().decode("utf-8");
-  stdoutText = stdout.read().decode("utf-8");
-  if stdoutText != '' :
-    print('[success]: '+ stdoutText);
-
-  if stderrText != '' :
-    print('[error]: '+ stderrText);
-  
 if __name__ == '__main__':
   fire.Fire(deploy);
