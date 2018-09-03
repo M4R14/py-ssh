@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM python:3-alpine3.8
 
 # base tool
 RUN apk update \
@@ -6,10 +6,8 @@ RUN apk update \
   ca-certificates \
   ffmpeg \
   opus \
-  python3 \
   openssh
 
-# Install build dependencies
 RUN apk add --no-cache --virtual .build-deps \
   gcc \
   git \
@@ -17,14 +15,13 @@ RUN apk add --no-cache --virtual .build-deps \
   libffi-dev \
   libsodium-dev \
   make \
-  musl-dev \
-  python3-dev
+  musl-dev 
 
-RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python3 get-pip.py
+WORKDIR /usr/src/app
 
-# python lib
-RUN pip install \
-  paramiko \
-  fire
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /home/
+COPY . .
+
+CMD "sh"

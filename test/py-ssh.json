@@ -1,0 +1,18 @@
+{
+  "server": [
+    {
+      "server_name": "UAT",
+      "host": "128.199.238.217",
+      "user": "root",
+      "password": "avoca826",
+      "dir": "/var/www/saha"
+    },
+    {
+      "server_name": "PTU",
+      "host": "128.199.238.217",
+      "user": "root",
+      "password": "avoca826",
+      "dir": "/var/www/saha"
+    }
+  ]
+}

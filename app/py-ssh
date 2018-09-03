@@ -4,13 +4,12 @@ import fire
 import paramiko
 import json
 
-def deploy(command):
-  severHost = json.load(open('py-ssh.json'));
+def deploy(host, user, password, dir, command):
   _command = command;
-  _host = severHost['host'];
-  _username = severHost['user'];
-  _password = severHost['password'];
-  _dir = severHost['dir'];
+  _host = host;
+  _username = user;
+  _password = password;
+  _dir = dir;
 
   client = paramiko.SSHClient();
   client.load_system_host_keys();
@@ -34,5 +33,28 @@ def deploy(command):
       print("[status] %s" % exit_status);
       sys.exit('[error]: %s' % stderr.read().decode("utf-8"));
 
+class deployer(object):
+  def __init__(self, servername, command):
+    filejson = 'py-ssh.json';
+    severHost = json.load(open(filejson));
+    servers = severHost['server'];
+
+    for server in servers:
+      if (server['server_name'] == servername):
+        self.__server = server;
+        break
+
+    self.__run(command);
+
+  def __run(self, command):
+    server = self.__server
+    deploy(
+      server['host'],
+      server['user'],
+      server['password'],
+      server['dir'],
+      command
+    );
+
 if __name__ == '__main__':
-  fire.Fire(deploy);
+  fire.Fire(deployer);
