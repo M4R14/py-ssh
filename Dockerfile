@@ -6,9 +6,8 @@ RUN apk update \
   ca-certificates \
   ffmpeg \
   opus \
-  openssh
-
-RUN apk add --no-cache --virtual .build-deps \
+  openssh \
+  && apk add --no-cache --virtual .build-deps \
   gcc \
   git \
   openssl-dev \
@@ -24,6 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN cp src/py-ssh.py /usr/local/bin/pyssh
+RUN cp src/py-ssh.py /usr/local/bin/pyssh && pyssh version
 
 CMD "sh"

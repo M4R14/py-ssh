@@ -34,17 +34,21 @@ def deploy(host, user, password, dir, command):
       sys.exit('[error]: %s' % stderr.read().decode("utf-8"));
 
 class deployer(object):
-  def __init__(self, servername, command):
+  version = '0.0.2'
+
+  def deploy(self, servername, command):
     filejson = 'py-ssh.json';
     severHost = json.load(open(filejson));
     servers = severHost['server'];
-
+    
     for server in servers:
-      if (server['server_name'] == servername):
+      if (servername.lower() == 'all'):
         self.__server = server;
+        self.__run(command);
+      elif (server['server_name'] == servername):
+        self.__server = server;
+        self.__run(command);
         break
-
-    self.__run(command);
 
   def __run(self, command):
     server = self.__server
